@@ -1,8 +1,7 @@
-import { Formik, Form, Field, ErrorMessage as FormikError } from "Formik";
+import { Formik, Form, Field, ErrorMessage as FormikError, type FormikHelpers } from "formik";
 import * as Yup from "yup";
 import css from "./NoteForm.module.css";
 import type { NoteTag } from "../../types/note";
-
 import type { CreateNoteProp } from "../../services/noteService";
 
 interface NoteFormProps {
@@ -32,12 +31,12 @@ export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
     <Formik
       initialValues={initialValues}
       validationSchema={NoteSchema}
-      onSubmit={(values, { resetForm }) => {
+      onSubmit={(values: CreateNoteProp, { resetForm }: FormikHelpers<CreateNoteProp>) => {
         onSubmit(values);
         resetForm();
       }}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting }: { isSubmitting: boolean }) => (
         <Form className={css.form}>
           <div className={css.formGroup}>
             <label htmlFor="title">Title</label>
