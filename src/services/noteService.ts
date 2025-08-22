@@ -6,9 +6,6 @@ const TOKEN = import.meta.env.VITE_NOTEHUB_TOKEN;
 
 export interface FetchNotesResponse {
   notes: Note[];
-  page: number;
-  perPage: number;
-  total: number;
   totalPages: number;
 }
 
@@ -38,11 +35,12 @@ export async function createNote(newNote: CreateNoteProp): Promise<Note> {
   return response.data;
 }
 
-export async function deleteNote(id: string): Promise<{ id: string }> {
-  const response = await axios.delete<{ id: string }>(`${BASE_URL}/notes/${id}`, {
+export async function deleteNote(id: string): Promise<Note> {
+  const response = await axios.delete<Note>(`${BASE_URL}/notes/${id}`, {
     headers: { Authorization: `Bearer ${TOKEN}` },
   });
   return response.data;
 }
+
 
 

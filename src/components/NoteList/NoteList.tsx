@@ -1,13 +1,30 @@
 import css from "./NoteList.module.css";
 import type { Note } from "../../types/note";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteNote } from "../../services/noteService";
 
 interface NoteListProps {
-  notes: Note[]; 
-  onDelete: (id: string) => void;
+  notes: Note[];
 }
 
-export default function NoteList({ notes, onDelete }: NoteListProps) {
-    if (notes.length === 0) {
+export default function NoteList({ notes }: NoteListProps) {
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteNote(id),
+    onSuccess: () => {
+           queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+    onError: (err) => {
+      console.error("Failed to delete note:", err);
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
+
+  if (notes.length === 0) {
     return <p className={css.empty}>There are no notes yet. Please create one!</p>;
   }
 
@@ -19,7 +36,7 @@ export default function NoteList({ notes, onDelete }: NoteListProps) {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <button className={css.button} onClick={() => onDelete(note.id)}>
+            <button className={css.button} onClick={() => handleDelete(note.id)}>
               Delete
             </button>
           </div>
@@ -28,41 +45,42 @@ export default function NoteList({ notes, onDelete }: NoteListProps) {
     </ul>
   );
 }
-//  import { useEffect } from "react";
-// import { keepPreviousData, useQuery } from "@tanstack/react-query";
-// import { fetchNotes } from "../../services/noteService";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import css from "./NoteList.module.css";
-// import Loader from "../Loader/Loader";
-// import ErrorMessage from "../ErrorMessage/ErrorMessage";
 // import type { Note } from "../../types/note";
 
 // interface NoteListProps {
-//   page: number;
-//   perPage: number;
-//   search?: string;
+//   notes: Note[]; 
 //   onDelete: (id: string) => void;
-//   onTotalPages: (total: number) => void;
 // }
 
-// export default function NoteList({ page, perPage, search="", onDelete, onTotalPages }: NoteListProps) {
-//   const { data, isLoading, isError } = useQuery({
-//     queryKey: ["notes", page, search],
-//     queryFn: () => fetchNotes(page, perPage, search),
-//     placeholderData: keepPreviousData,
-//   });
-
-//   useEffect(() => {
-//     if (data?.totalPages) {
-//       onTotalPages(data.totalPages);
-//     }
-//   }, [data, onTotalPages]);
-
-//   if (isLoading) return <Loader />;
-//   if (isError) return <ErrorMessage />;
-
-//    const notes: Note[] = data?.notes ?? [];
-
-//   if (notes.length === 0) {
+// export default function NoteList({ notes, onDelete }: NoteListProps) {
+//     if (notes.length === 0) {
 //     return <p className={css.empty}>There are no notes yet. Please create one!</p>;
 //   }
 
@@ -83,4 +101,3 @@ export default function NoteList({ notes, onDelete }: NoteListProps) {
 //     </ul>
 //   );
 // }
-// NoteList.tsx
